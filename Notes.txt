@@ -1,0 +1,120 @@
+
+In Flask, g is a global object that is available to all requests. It can be used to store data that is specific to a single request and that needs to be passed between functions in the request lifecycle.
+
+The g object is similar to the session object in Flask, but it is intended for use with data that is specific to a single request and is not stored on the server. The g object is automatically created by Flask when a request is received, and it is destroyed when the response is returned.
+
+
+
+multi-processing can cause problems as records are updated enmasse to the db, if multiple processes are competing for finite data...the solution is to reduce the processes to as few as possible.
+
+Single tip design patern.  
+
+
+DATABASE FOLDER:
+    __init__.py file 
+        1.) Imports sqlite3
+        2.) Imports g from flask
+        3.) sets the constant DATABASE_URL as main.db (if defined already)
+        4.) get_db sets the .db if none already assigned.  This function reduces the number of connection to the db at a time.
+
+    task.py:
+        Imports get_db function from app.databate (init function activated it)
+
+
+
+    output_formatter function(results)  sqlite3 returns tuples.  a.) Tuples are ordered. b.) Tuples are immutable
+                        mulples are tuples of tuples.  Tuples are not compatible with JSON
+                        this function converts it to lists of dictionionaries.
+                            the dictionary is named formatted.
+                            dictionaries here are indexed at 0
+
+
+        out = []   #create empty list
+        for result in results:  #for each loop "for each result in results"
+            formatted = {
+                "id": result[0],
+                "summary": result [1],    
+                "description": result[2],
+                "is_active": result[3],
+            }
+            out.append(formatted)  #We are adding those results to the out list that exists outside of for loop.
+        return out
+
+
+    scan function:
+
+        conn = get_db()
+        cursor = conn.execute("SELECT * FROM task WHERE is_active=1", ()) #Enforsing soft-delete so we don't call inactives  ()=empty tuple
+        results = cursor.fetchall() #this gives us tuples of tuples
+        cursor.close()
+        return output_formatter(results)
+
+
+    select_by_id(pk) function: 
+
+        conn = get_db()             #pk primary key...can't use id as it is a reserved word within Python.  
+        cursor = conn.execute("SELECT * FROM task Where id=?", (pk,))  (This function is very simlar to scan but WHERE question marks)
+        results = cursor.fetchall()
+        cusor.close()
+        return output_formatter(results)
+
+
+def insert(raw_data function:           #extracting data from dictionary according to key:value
+    task_data = (
+        raw_data.get("summary"),
+        raw_data.get("description")
+    )
+    statement = """         #triple double or triple single quote creates a multi-line string.
+        INSERT INTO task (
+                summary,
+                description
+            ) VALUES (?, ?)
+    """
+    conn = get_db()
+    cursor = conn.executed(statement, task_data)
+    cursor . commit()
+    cursor.close()
+
+
+def update(raw_data, pk):
+    task_data = (
+        raw_data.get("summary"),
+        raw_data.get("description"),
+        raw_data.get("is_active"),
+        pk
+    )
+    statement = """
+        UPDATE task
+        SET summary=?,
+            description=?,
+            is_active=?
+        WHERE id=?
+    """
+    conn = get_db()
+    cursor = conn.execute(statement, task_data)
+    conn.commit()
+    conn.close ()
+
+
+def delete(pk)
+    conn= get_db()
+    conn.execute("DELETE FROM task WHERE id=?", (pk,))
+    conn.commit()
+    conn.close()
+
+        
+>>> Python REPL read evaluate print loop  typle python3 to activate
+
+tuple arithmetic 
+
+x = (1,2,3)
+   y =  x + (4,)
+   y = (1,2,3,4)  but x remains only (1,2,3)
+
+
+   cursor is a buffer that holds data
+   commands call 
+
+   Guido Van Rose (Pyton author...also style guide to Python)  Less than 79-110 characters
+
+   Never map % results for security reasons like SQL injections
