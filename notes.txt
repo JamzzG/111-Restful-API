@@ -118,3 +118,43 @@ x = (1,2,3)
    Guido Van Rose (Pyton author...also style guide to Python)  Less than 79-110 characters
 
    Never map % results for security reasons like SQL injections
+
+hidden files on command prompt
+    -a
+
+
+   example git repository creation.
+    example:
+     mkdir temp_dir
+     cd temp_dir
+     inside temp folder: 
+        Hello, world > README.md
+
+    cat README.md
+        returns 
+        Hello, world
+
+    #Initialize local repository:
+        git init
+    #stage changes:
+        git add -A
+            git status shows the staged changes
+    #commit changes:
+        git commit -m "explain what you are changing"
+            git log shows the full sha generated from the changes 
+    #Connect local repository to remote
+        go to git and create repository
+
+    #pushing the committed local repository to github.
+        git push
+        2nd page verify SSH
+        Copy the 3 lines:
+            git remote add origin git@github.com:githubname/repositoryname.
+            git branch -M main (changes branch from Master to Main)
+            git push -u origin main
+
+    
+
+Read up on git stash   
+bit bucket, github, git lab are git repository providers.
+    
